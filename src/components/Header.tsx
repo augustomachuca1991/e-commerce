@@ -2,18 +2,20 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink as RouterNavLink } from 'react-router-dom';
 import { Menu, Moon, Search, ShoppingBag, Sun, User, X } from 'lucide-react';
 import { NAV_LINKS } from '../data/products';
+import { useCart, useCartUI } from '../context/CartContext';
 import type { Theme } from '../types';
 
 interface HeaderProps {
   theme: Theme;
   onToggleTheme: () => void;
-  cartCount: number;
 }
 
 const iconBtn =
   'relative flex h-8 w-8 items-center justify-center rounded text-content transition-colors hover:bg-surface';
 
-export function Header({ theme, onToggleTheme, cartCount }: HeaderProps) {
+export function Header({ theme, onToggleTheme }: HeaderProps) {
+  const { itemCount } = useCart();
+  const { open: openCart } = useCartUI();
   const [open, setOpen] = useState(false);
   const [opacity, setOpacity] = useState(1);
   const isDark = theme === 'dark';
@@ -90,13 +92,14 @@ export function Header({ theme, onToggleTheme, cartCount }: HeaderProps) {
           </Link>
           <button
             type="button"
-            aria-label={`Carrito, ${cartCount} productos`}
+            onClick={openCart}
+            aria-label={`Carrito, ${itemCount} productos`}
             className={iconBtn}
           >
             <ShoppingBag size={16} strokeWidth={1.5} />
-            {cartCount > 0 && (
+            {itemCount > 0 && (
               <span className="absolute right-0.5 top-0.5 flex h-[14px] w-[14px] items-center justify-center rounded-full bg-primary font-sans text-[9px] font-bold leading-none text-on-primary">
-                {cartCount > 9 ? '9+' : cartCount}
+                {itemCount > 9 ? '9+' : itemCount}
               </span>
             )}
           </button>

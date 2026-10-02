@@ -10,6 +10,9 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ForgotPage from './pages/ForgotPage';
 import NotFoundPage from './pages/NotFoundPage';
+import ProductPage from './pages/ProductPage';
+import CheckoutPage from './pages/CheckoutPage';
+import CheckoutResultPage from './pages/CheckoutResultPage';
 
 export const router = createBrowserRouter([
   {
@@ -21,6 +24,9 @@ export const router = createBrowserRouter([
       { path: 'mujer', element: <MujerPage /> },
       { path: 'ofertas', element: <OfertasPage /> },
       { path: 'otros', element: <OtrosPage /> },
+      { path: 'producto/:id', element: <ProductPage /> },
+      { path: 'checkout', element: <CheckoutPage /> },
+      { path: 'checkout/resultado', element: <CheckoutResultPage /> },
       { path: '*', element: <NotFoundPage /> },
     ],
   },

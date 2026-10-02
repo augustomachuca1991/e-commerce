@@ -1,8 +1,21 @@
 export type CategoryId = 'running' | 'futbol' | 'entrenamiento' | 'paddle';
 
+export type Gender = 'hombre' | 'mujer' | 'unisex';
+
 export interface Category {
   id: CategoryId;
   label: string;
+}
+
+export interface ProductSize {
+  label: string;
+  /** Unidades disponibles; 0 deshabilita el talle. */
+  stock: number;
+}
+
+export interface ProductColor {
+  label: string;
+  hex: string;
 }
 
 export interface Product {
@@ -13,8 +26,21 @@ export interface Product {
   /** Porcentaje de descuento (0-100). */
   discount?: number;
   category: CategoryId;
-  /** URL o ruta de imagen del producto. */
-  image?: string;
+  gender: Gender;
+  description: string;
+  /** Hasta 10 imágenes: la primera es la portada. */
+  images: string[];
+  sizes: ProductSize[];
+  colors: ProductColor[];
+}
+
+export interface CartItem {
+  /** Identificador único de la variante (producto + talle + color). */
+  key: string;
+  product: Product;
+  size: string;
+  color: string;
+  qty: number;
 }
 
 export interface NavLink {

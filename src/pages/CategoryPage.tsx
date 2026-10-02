@@ -1,15 +1,35 @@
-import { Link } from 'react-router-dom';
-import type { Product } from '../types';
-import { ProductCard } from '../components/ProductCard';
+import { useMemo } from 'react';
+import { Link, useLocation, useSearchParams } from 'react-router-dom';
+import { CATEGORIES } from '../data/products';
+import { useQuickAdd } from '../hooks/useQuickAdd';
+import { ProductGrid } from '../components/ProductGrid';
+import type { CategoryId, Product } from '../types';
 
 interface CategoryPageProps {
   title: string;
   description: string;
   products: Product[];
-  onAdd: (p: Product) => void;
+  /** Filtra por `?categoria=`, usado por las tarjetas de la home. */
+  filterByCategory?: boolean;
 }
 
-export function CategoryPage({ title, description, products, onAdd }: CategoryPageProps) {
+export function CategoryPage({
+  title,
+  description,
+  products,
+  filterByCategory = false,
+}: CategoryPageProps) {
+  const [params] = useSearchParams();
+  const location = useLocation();
+  const { quickAdd } = useQuickAdd();
+
+  const category = filterByCategory ? params.get('categoria') : null;
+  // Memorizado para que useInfiniteScroll no reinicie la paginación en cada render.
+  const visibleProducts = useMemo(
+    () => (category ? products.filter((p) => p.category === (category as CategoryId)) : products),
+    [products, category],
+  );
+
   return (
     <div className="bg-base">
       <section className="bg-hero">
@@ -29,7 +49,9 @@ export function CategoryPage({ title, description, products, onAdd }: CategoryPa
 
       <div className="border-b-hairline border-line">
         <div className="mx-auto flex max-w-shell items-center justify-between px-6 py-4">
-          <span className="text-[12px] text-muted">{products.length} productos</span>
+          <span aria-live="polite" className="text-[12px] text-muted">
+            {visibleProducts.length} productos
+          </span>
           <div className="flex items-center gap-2.5">
             <select
               aria-label="Ordenar por"
@@ -50,19 +72,43 @@ export function CategoryPage({ title, description, products, onAdd }: CategoryPa
         </div>
       </div>
 
-      <ul className="mx-auto grid max-w-shell grid-cols-2 gap-[14px] px-6 pb-2 pt-6 md:grid-cols-4">
-        {products.map((p) => (
-          <ProductCard key={p.id} product={p} onAdd={onAdd} />
-        ))}
-      </ul>
+      {category ? (
+        <nav aria-label="Filtrar por categoría" className="border-b-hairline border-line">
+          <ul className="mx-auto flex max-w-shell flex-wrap gap-2 px-6 py-3">
+            <li>
+              <Link
+                to={location.pathname}
+                className={`inline-block rounded-full border-hairline border-line px-3 py-1 font-sans text-[11.5px] transition-colors ${
+                  !category ? 'border-primary text-primary' : 'text-muted hover:text-content'
+                }`}
+              >
+                Todas
+              </Link>
+            </li>
+            {CATEGORIES.map((c) => (
+              <li key={c.id}>
+                <Link
+                  to={`?categoria=${c.id}`}
+                  className={`inline-block rounded-full border-hairline border-line px-3 py-1 font-sans text-[11.5px] transition-colors ${
+                    category === c.id ? 'border-primary text-primary' : 'text-muted hover:text-content'
+                  }`}
+                >
+                  {c.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ) : null}
 
-      <div className="flex justify-center py-7">
-        <button
-          type="button"
-          className="rounded border-hairline border-primary px-[26px] py-[11px] font-display text-[12.5px] font-bold uppercase tracking-[0.4px] text-primary transition hover:bg-tint"
-        >
-          Cargar más productos
-        </button>
+      <div className="mx-auto max-w-shell px-6">
+        <ProductGrid
+          products={visibleProducts}
+          onAdd={quickAdd}
+          pageSize={12}
+          className="grid grid-cols-2 gap-[14px] pt-6 md:grid-cols-4"
+          emptyMessage="No hay productos en esta categoría."
+        />
       </div>
     </div>
   );

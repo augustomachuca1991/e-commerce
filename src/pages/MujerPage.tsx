@@ -1,18 +1,16 @@
-import { useOutletContext } from 'react-router-dom';
+import { useMemo } from 'react';
 import { PRODUCTS } from '../data/products';
 import { CategoryPage } from './CategoryPage';
-import type { Product } from '../types';
-
-type OutletCtx = { addToCart: (p: Product) => void };
 
 export default function MujerPage() {
-  const { addToCart } = useOutletContext<OutletCtx>();
+  // Solo productos de mujer o unisex.
+  const products = useMemo(() => PRODUCTS.filter((p) => p.gender !== 'hombre'), []);
+
   return (
     <CategoryPage
       title="Mujer"
       description="Indumentaria deportiva femenina pensada para rendir con comodidad y estilo."
-      products={PRODUCTS}
-      onAdd={addToCart}
+      products={products}
     />
   );
 }

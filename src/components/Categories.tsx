@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Dumbbell, Footprints, Trophy, type LucideIcon } from 'lucide-react';
 import { TennisRacket } from './TennisRacket';
 import { CATEGORIES } from '../data/products';
@@ -27,16 +28,16 @@ export function Categories() {
         {CATEGORIES.map((c) => {
           const Icon = ICONS[c.id];
           return (
-            <a
+            <Link
               key={c.id}
-              href={`#${c.id}`}
+              to={`/otros?categoria=${c.id}`}
               className={`flex flex-col items-center justify-center gap-2 px-2 py-5 transition-opacity hover:opacity-80 ${STYLES[c.id]}`}
             >
               <Icon size={16} strokeWidth={1.5} />
               <span className="font-display text-[12px] font-bold uppercase tracking-[0.3px]">
                 {c.label}
               </span>
-            </a>
+            </Link>
           );
         })}
       </div>
